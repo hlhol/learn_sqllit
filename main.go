@@ -14,14 +14,8 @@ type Errors struct {
 }
 
 type Data struct {
-	Todo    []string
-	Done    []string
-	Indoing []string
-}
+	Users []string
 
-type PageData struct {
-	Data  Data
-	Error Errors
 }
 
 func main() {
@@ -43,7 +37,7 @@ func main() {
 func mainPage(res http.ResponseWriter, req *http.Request) {
 	temp, err := template.ParseFiles("temp/index.html")
 	if err != nil {
-		errorData := PageData{
+		errorData := Errors{
 			Error: Errors{
 				Err:    http.StatusInternalServerError,
 				ErrStr: fmt.Sprintf("Error parsing template: %v", err),

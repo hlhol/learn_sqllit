@@ -3,34 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>To-Do List</title>
+    <title>Login or Sign Up</title>
     <link rel="stylesheet" href="main.css">
 </head>
 <body>
     <div class="container">
-        <h1>To-Do List</h1>
-        
-        <form id="task-form">
-            <input type="text" id="new-task" placeholder="Add a new task..." required>
-            <button type="submit">Add Task</button>
+        <h1 id="form-title">Login</h1>
+        <form id="auth-form" action="/login" method="post">
+            <input type="text" id="username" name="username" placeholder="Username" required>
+            <input type="password" id="password" name="password" placeholder="Password" required>
+            <button type="submit">Log In</button>
         </form>
-        
-        <div class="task-section">
-            <h2>To-Do</h2>
-            <ul id="todo-list"></ul>
-        </div>
-        
-        <div class="task-section">
-            <h2>In Progress</h2>
-            <ul id="indoing-list"></ul>
-        </div>
-        
-        <div class="task-section">
-            <h2>Done</h2>
-            <ul id="done-list"></ul>
-        </div>
+        <button class="switch-button" onclick="switchForm()">Switch to Sign Up</button>
     </div>
-
     <script src="index.js"></script>
 </body>
 </html>
