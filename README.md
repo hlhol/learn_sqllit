@@ -1,18 +1,13 @@
-# To-Do List Web Application
-
+# Login & sing up system Web Application
 ## Overview
 
-This project is a simple web application for managing a to-do list, built using Go (Golang) for the backend and SQLite for the database. It provides a basic interface to add, view, and manage tasks.
+This project is a simple web application for managing a sign in , built using Go (Golang) for the backend and SQLite for the database. It provides a basic interface to loggin.
 
 ## Features
 
-- **Add new tasks** to the to-do list
-- **Mark tasks as done**
-- **View a list of tasks** categorized as:
-  - To-Do
-  - In Progress
-  - Done
-- **Delete tasks**
+- **Add new user** to website
+- **login**
+- **Delete user**
 
 ## Prerequisites
 
@@ -20,6 +15,4 @@ Before you begin, ensure you have the following installed on your system:
 
 - [Go](https://golang.org/doc/install) (version 1.16 or higher)
 - SQLite
-
-## Project Structure
 

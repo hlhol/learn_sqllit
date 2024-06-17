@@ -5,6 +5,7 @@ import (
 	"html/template"
 	"log"
 	"net/http"
+	"os"
 )
 
 type Errors struct {
@@ -24,6 +25,11 @@ type PageData struct {
 }
 
 func main() {
+	if len(os.Args) != 0 {
+		log.Println("use without any argumrnt \nlike go run . or go run main.go")
+		return
+	}
+
 	fmt.Println("Starting the web app...")
 
 	http.HandleFunc("/", mainPage)
