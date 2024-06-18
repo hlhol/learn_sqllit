@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login or Sign Up</title>
-    <link rel="stylesheet" href="main.css.">
+    <link rel="stylesheet" href="/static/main.css">
 </head>
 <body>
     <div class="container">
@@ -15,7 +15,14 @@
             <button type="submit">Log In</button>
         </form>
         <button class="switch-button" onclick="switchForm()">Switch to Sign Up</button>
+
+        <!-- Sign Up Form (Initially Hidden) -->
+        <form id="signup-form" action="/signup" method="post" style="display: none;">
+            <input type="text" id="signup-username" name="username" placeholder="Username" required>
+            <input type="password" id="signup-password" name="password" placeholder="Password" required>
+            <button type="submit">Sign Up</button>
+        </form>
     </div>
-    <script src="index.js"></script>
+    <script src="/static/index.js"></script>
 </body>
 </html>
