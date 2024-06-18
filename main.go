@@ -30,6 +30,7 @@ type PageData struct {
     Error  Errors
     Logged bool
     SignUp bool
+    User   User
 }
 
 var db *sql.DB
@@ -60,7 +61,7 @@ func main() {
 }
 
 func mainPage(res http.ResponseWriter, req *http.Request) {
-    if req.URL.Path != "/" {
+    if req.URL.Path != "/" && req.URL.Path != "/success" { // Adjust condition to include /success
         errorData := PageData{
             Error: Errors{
                 Err:    http.StatusNotFound,
@@ -68,11 +69,48 @@ func mainPage(res http.ResponseWriter, req *http.Request) {
             },
         }
         log.Printf("404 Not Found: %s", req.URL.Path)
-        temp, _ := template.ParseFiles("temp/error.html")
+        temp, _ := template.ParseFiles("static/error.html")
         temp.Execute(res, errorData)
         return
     }
 
+    // Handle /success route
+    if req.URL.Path == "/success" {
+        temp, err := template.ParseFiles("static/success.html")
+        if err != nil {
+            errorData := PageData{
+                Error: Errors{
+                    Err:    http.StatusInternalServerError,
+                    ErrStr: fmt.Sprintf("Error parsing template: %v", err),
+                },
+            }
+            log.Printf("Error parsing template: %v", err)
+            temp, _ := template.ParseFiles("static/error.html")
+            temp.Execute(res, errorData)
+            return
+        }
+
+        // Example: Check if user is logged in (you need to implement this logic)
+        // For now, assume no user is logged in
+        pageData := PageData{
+            Logged: true, // Set to true if the user is logged in
+        }
+
+        if err := temp.Execute(res, pageData); err != nil {
+            errorData := PageData{
+                Error: Errors{
+                    Err:    http.StatusInternalServerError,
+                    ErrStr: fmt.Sprintf("Error executing template: %v", err),
+                },
+            }
+            log.Printf("Error executing template: %v", err)
+            temp, _ := template.ParseFiles("static/error.html")
+            temp.Execute(res, errorData)
+        }
+        return
+    }
+
+    // Handle index.html rendering
     temp, err := template.ParseFiles("static/index.html")
     if err != nil {
         errorData := PageData{
@@ -82,7 +120,7 @@ func mainPage(res http.ResponseWriter, req *http.Request) {
             },
         }
         log.Printf("Error parsing template: %v", err)
-        temp, _ := template.ParseFiles("temp/error.html")
+        temp, _ := template.ParseFiles("static/error.html")
         temp.Execute(res, errorData)
         return
     }
@@ -109,10 +147,11 @@ func mainPage(res http.ResponseWriter, req *http.Request) {
             },
         }
         log.Printf("Error executing template: %v", err)
-        temp, _ := template.ParseFiles("temp/error.html")
+        temp, _ := template.ParseFiles("static/error.html")
         temp.Execute(res, errorData)
     }
 }
+
 
 func loginHandler(res http.ResponseWriter, req *http.Request) {
     if req.Method != http.MethodPost {
@@ -125,11 +164,33 @@ func loginHandler(res http.ResponseWriter, req *http.Request) {
 
     user, err := authenticateUser(username, password)
     if err != nil {
-        http.Error(res, err.Error(), http.StatusUnauthorized)
+        pageData := PageData{
+            Error: Errors{
+                Err:    http.StatusUnauthorized,
+                ErrStr: "Invalid username or password",
+            },
+        }
+        temp, _ := template.ParseFiles("static/error.html")
+        temp.Execute(res, pageData)
         return
     }
 
-    fmt.Fprintf(res, "Welcome, %s!", user.Username)
+    pageData := PageData{
+        User:   user,
+        Logged: true,
+    }
+
+    // Render success.html template
+    temp, err := template.ParseFiles("static/success.html")
+    if err != nil {
+        http.Error(res, fmt.Sprintf("Failed to load template: %v", err), http.StatusInternalServerError)
+        return
+    }
+
+    if err := temp.Execute(res, pageData); err != nil {
+        http.Error(res, fmt.Sprintf("Failed to render template: %v", err), http.StatusInternalServerError)
+        return
+    }
 }
 
 func signupHandler(res http.ResponseWriter, req *http.Request) {
@@ -160,7 +221,6 @@ func signupHandler(res http.ResponseWriter, req *http.Request) {
     err = db.QueryRow("SELECT username FROM users WHERE username = ?", username).Scan(&existingUsername)
     switch {
     case err == sql.ErrNoRows:
-        // Username does not exist, proceed to create the new user
         _, err := db.Exec("INSERT INTO users (username, password) VALUES (?, ?)", username, password)
         if err != nil {
             http.Error(res, "Failed to create user", http.StatusInternalServerError)
@@ -170,17 +230,14 @@ func signupHandler(res http.ResponseWriter, req *http.Request) {
         // Redirect or respond with a success message
         http.Redirect(res, req, "/login", http.StatusSeeOther)
     case err != nil:
-        // Database error
         http.Error(res, "Database error", http.StatusInternalServerError)
         log.Printf("Database error: %v", err)
         return
     default:
-        // Username already exists
         http.Error(res, "Username already exists", http.StatusConflict)
         return
     }
 }
-
 
 func authenticateUser(username, password string) (User, error) {
     var user User
@@ -197,12 +254,4 @@ func authenticateUser(username, password string) (User, error) {
     }
 
     return user, nil
-}
-
-func createUser(username, password string) error {
-    _, err := db.Exec("INSERT INTO users (username, password) VALUES (?, ?)", username, password)
-    if err != nil {
-        return fmt.Errorf("username already taken")
-    }
-    return nil
 }

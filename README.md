@@ -7,7 +7,6 @@ This project is a simple web application for managing a sign in , built using Go
 
 - **Add new user** to website
 - **login**
-- **Delete user**
 
 ## Prerequisites
 

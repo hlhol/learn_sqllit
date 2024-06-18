@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Success</title>
+    <link rel="stylesheet" href="/static/success.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Success</h1>
+        {{ if .Logged }}
+            <p>Welcome, {{ .User.Username }}! You have successfully logged in.</p>
+        {{ else if .SignUp }}
+            <p>Welcome, {{ .User.Username }}! Your account has been successfully created.</p>
+        {{ else }}
+            <p>Operation was successful.</p>
+        {{ end }}
+        <a href="/">Go back to home page</a>
+    </div>
+</body>
+</html>
